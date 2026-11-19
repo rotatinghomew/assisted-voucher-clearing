@@ -1,0 +1,5 @@
+id,batch,line,kind,occurred,recorded
+G1,T20,,received,2026-07-08,2026-07-08
+G2,T20,L2,paid,2026-07-09,2026-07-10
+G2,T20,L2,paid,2026-07-09,2026-07-12
+G3,T20,L1,rejected,2026-07-10,2026-07-12

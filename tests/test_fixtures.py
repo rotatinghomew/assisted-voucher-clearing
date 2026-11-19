@@ -4,8 +4,8 @@ import unittest
 
 
 FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
-HEADERS = {'vouchers': ['id', 'issuer', 'service', 'units', 'issued'], 'deliveries': ['id', 'provider', 'service', 'units', 'occurred'], 'relations': ['id', 'delivery', 'voucher', 'state', 'max_units', 'recorded'], 'voids': ['voucher', 'effective', 'recorded'], 'claims': ['id', 'provider', 'bill', 'service', 'units', 'delivery_hint'], 'payments': ['id', 'claim', 'allocation', 'units', 'cents', 'paid'], 'corrections': ['id', 'supersedes', 'field', 'value', 'recorded'], 'terms': ['service', 'unit_cents', 'same_provider_adjustment', 'cross_provider_offset']}
-LINKS = [('relations', 'delivery', 'deliveries', 'id'), ('relations', 'voucher', 'vouchers', 'id'), ('payments', 'claim', 'claims', 'id')]
+HEADERS = {'vouchers': ['id', 'issuer', 'service', 'units', 'issued'], 'deliveries': ['id', 'provider', 'service', 'units', 'occurred'], 'relations': ['id', 'delivery', 'voucher', 'state', 'max_units', 'recorded'], 'voids': ['voucher', 'effective', 'recorded'], 'claims': ['id', 'provider', 'bill', 'service', 'units', 'delivery_hint'], 'payments': ['id', 'claim', 'allocation', 'units', 'cents', 'paid'], 'transmissions': ['id', 'batch', 'claim', 'allocation', 'units', 'sent'], 'receipts': ['id', 'batch', 'line', 'kind', 'occurred', 'recorded'], 'corrections': ['id', 'supersedes', 'field', 'value', 'recorded'], 'terms': ['service', 'unit_cents', 'same_provider_adjustment', 'cross_provider_offset']}
+LINKS = [('relations', 'delivery', 'deliveries', 'id'), ('relations', 'voucher', 'vouchers', 'id'), ('payments', 'claim', 'claims', 'id'), ('transmissions', 'claim', 'claims', 'id')]
 
 
 def read(name):
@@ -22,7 +22,7 @@ class SourceRecords(unittest.TestCase):
                 self.assertEqual(header, expected)
                 self.assertTrue(rows)
                 self.assertTrue(all(None not in row and None not in row.values() for row in rows))
-                if "id" in header:
+                if "id" in header and (name != "receipts" or "batch" not in header):
                     ids = [row["id"] for row in rows]
                     self.assertTrue(all(ids))
                     self.assertEqual(len(ids), len(set(ids)))
