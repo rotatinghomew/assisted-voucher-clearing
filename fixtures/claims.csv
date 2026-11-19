@@ -1,0 +1,7 @@
+id,provider,bill,service,units,delivery_hint
+C1,A,B01,打印,4,D1
+C2,A,B02,打印,3,D2
+C3,A,B03,打印,2,D2
+C4,B,B04,打印,2,D3
+C5,A,B04,扫描,2,D4
+C6,B,B05,打印,2,D5

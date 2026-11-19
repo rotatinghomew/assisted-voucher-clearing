@@ -1,0 +1,8 @@
+id,delivery,voucher,state,max_units,recorded
+R1,D1,V1,verified,4,2026-07-03
+R2,D2,V1,possible,2,2026-07-04
+R3,D2,V2,possible,3,2026-07-04
+R4,D3,V2,possible,2,2026-07-06
+R5,D3,V4,possible,2,2026-07-06
+R6,D4,V3,verified,2,2026-07-07
+R7,D5,V4,possible,2,2026-07-08

@@ -1,17 +1,36 @@
 import csv
-import unittest
 from pathlib import Path
+import unittest
 
 
-class FixtureTests(unittest.TestCase):
-    def test_case_events_have_ordered_timestamps_and_distinct_cases(self):
-        path = Path(__file__).parents[1] / "fixtures" / "cases.csv"
-        with path.open(encoding="utf-8", newline="") as source:
-            rows = list(csv.DictReader(source))
-        self.assertGreaterEqual(len(rows), 10)
-        self.assertGreaterEqual(len({row["case_id"] for row in rows}), 4)
-        self.assertTrue(all(row["event_id"] and row["occurred_at"] for row in rows))
+FIXTURES = Path(__file__).resolve().parents[1] / "fixtures"
+HEADERS = {'vouchers': ['id', 'issuer', 'service', 'units', 'issued'], 'deliveries': ['id', 'provider', 'service', 'units', 'occurred'], 'relations': ['id', 'delivery', 'voucher', 'state', 'max_units', 'recorded'], 'voids': ['voucher', 'effective', 'recorded'], 'claims': ['id', 'provider', 'bill', 'service', 'units', 'delivery_hint'], 'payments': ['id', 'claim', 'allocation', 'units', 'cents', 'paid'], 'corrections': ['id', 'supersedes', 'field', 'value', 'recorded'], 'terms': ['service', 'unit_cents', 'same_provider_adjustment', 'cross_provider_offset']}
+LINKS = [('relations', 'delivery', 'deliveries', 'id'), ('relations', 'voucher', 'vouchers', 'id'), ('payments', 'claim', 'claims', 'id')]
 
 
-if __name__ == "__main__":
-    unittest.main()
+def read(name):
+    with (FIXTURES / (name + ".csv")).open(encoding="utf-8", newline="") as source:
+        reader = csv.DictReader(source)
+        return reader.fieldnames, list(reader)
+
+
+class SourceRecords(unittest.TestCase):
+    def test_records_match_source_columns(self):
+        for name, expected in HEADERS.items():
+            with self.subTest(table=name):
+                header, rows = read(name)
+                self.assertEqual(header, expected)
+                self.assertTrue(rows)
+                self.assertTrue(all(None not in row and None not in row.values() for row in rows))
+                if "id" in header:
+                    ids = [row["id"] for row in rows]
+                    self.assertTrue(all(ids))
+                    self.assertEqual(len(ids), len(set(ids)))
+
+    def test_record_references_exist(self):
+        for source, field, target, key in LINKS:
+            with self.subTest(table=source, column=field):
+                _, source_rows = read(source)
+                _, target_rows = read(target)
+                keys = {row[key] for row in target_rows}
+                self.assertTrue(all(row[field] in keys for row in source_rows))

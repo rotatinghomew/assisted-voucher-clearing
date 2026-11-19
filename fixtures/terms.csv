@@ -1,0 +1,3 @@
+service,unit_cents,same_provider_adjustment,cross_provider_offset
+打印,30,yes,no
+扫描,60,yes,no
